@@ -125,26 +125,14 @@ Waypoint (40, −20) is visited twice (#3 and #7). The notebook's `waypoint_miss
 
 Mean / max sim-vs-real distance at the same progress along the path: 2.7 / 6.7 cm.
 
-The speed plot shows the difference between the two runs. In the simulator the robot stops completely at every corner (speed 0) and turns in place. On the real robot the speed only drops to 1–6 cm/s and rises again, so the robot turns while still rolling.
-
-### 4. Measured end point
-
-| | x, cm | y, cm | distance to the last waypoint, cm |
-|---|---|---|---|
-| Last waypoint | 65.0 | −20.0 | 0 |
-| Last line of `gotogol_data_real.txt` | 64.56 | −18.52 | 1.5 |
-| Tape measurement | *…* | *…* | *…* |
-| Tape − odometry (localization error) | *…* | *…* | *…* |
-
-*Fill in the tape row: measure the axle centre after the run, with x along the start heading and y to the robot's left.*
 
 ## Discussion
 
-In the simulator every corner was **cut** by 1.3–1.8 cm, just under the acceptance radius ε = 2 cm: the program switches to the next waypoint as soon as ρ < ε, so the robot turns before it reaches the corner. On the real robot the corners after the long strokes were **overshot** instead: the bottom of the 7 (+146°), the entry into the 8 (−120°) and the lower loop of the 8, worst at (65, −40) with 2.1 cm; the robot swung wide arcs there, and its path grew to 288 cm against 252 cm in the simulator. This comes from the turning gain `Kth` = 60 acting on a real robot that is faster (peak 28 vs 20 cm/s) and runs its control loop only every 47 ms instead of 10 ms. With motor inertia added, the robot is still rolling when it starts the turn and never fully stops to turn in place. Both curves are the robot's own odometry, which places it within 1.5 cm of the final waypoint, so the sim-vs-real gap visible in the plots (up to 6.7 cm) is a **control** problem: the same gains produce different dynamics on the real hardware. The tape measurement adds the **localization** part; for example, if the real wheel radius is the course's 3.75 cm rather than the 4.2 cm used here, the odometry over-reports distance by about 12 %.
+In the simulator every corner was **cut** by 1.3–1.8 cm, just under the acceptance radius ε = 2 cm: the program switches to the next waypoint as soon as ρ < ε, so the robot turns before it reaches the corner. On the real robot the corners after the long strokes were **overshot** instead: the bottom of the 7 (+146°), the entry into the 8 (−120°) and the lower loop of the 8, worst at (65, −40) with 2.1 cm; the robot swung wide arcs there, and its path grew to 288 cm against 252 cm in the simulator. This comes from the turning gain `Kth` = 60 acting on a real robot that is faster (peak 28 vs 20 cm/s) and runs its control loop only every 47 ms instead of 10 ms. With motor inertia added, the robot is still rolling when it starts the turn and never fully stops to turn in place. Both curves are the robot's own odometry, which places it within 1.5 cm of the final waypoint, so the sim-vs-real gap visible in the plots (up to 6.7 cm) is a **control** problem: the same gains produce different dynamics on the real hardware. 
 
 ## How to reproduce
 
-1. **Simulator.** Open `go_to_goal_sim (1).qrs` in TRIK Studio (TRIK v6.2 kit, 2D model) and run it. The planned 78 is drawn on the field as red dashed lines.
+1. **Simulator.** Open `go_to_goal_sim (1).qrs` in TRIK Studio (TRIK v6.2 kit, 2D model) and run it. 
 2. **Real robot.** Open `go_to_goal_real (2).qrs`, connect the robot and use **Upload and run**. If one encoder counts backwards when the robot is pushed forward, set `encSignL` or `encSignR = -1` in the Init block. Copy `gotogol_data_real.txt` from the robot.
 3. **Analysis.** Open `gotogoal_analisys.ipynb` in Colab, upload both txt files and run all cells.
 
